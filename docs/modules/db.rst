@@ -115,9 +115,9 @@ Start MongoDB service
 
 After mongodb is installed, you shoud start the database.
 
-``` mongod start ```
+`` mongod start ``
 
-You can specificy the path the database files with ``` -d ```  flag
+You can specificy the path the database files with `` -d ``  flag
 
 
 
@@ -127,13 +127,76 @@ Connect to database
 To use TensorDB mongodb implmentaiton,  you need pymongo client.
 
 you can install it by 
-``` pip install pymongo ```
+`` pip install pymongo ``
 
 
+it is very strateford to connected to the TensorDB system.
+you can try the following code
 
 .. code-block:: python
   from tensorlayer.db import TensorDB
-  db = TensorDB(ip='146.169.15.140', port=27017, db_name='your_db', user_name=None, password=None, studyID='1')
+  db = TensorDB(ip='127.0.0.1', port=27017, db_name='your_db', user_name=None, password=None, studyID='ministMLP')
+  
+
+the ip is the ip address of the database, and port number is number of mongodb.
+you may need to specificy the database name and studyid.
+the study id is an unique identifier for an experiement.
+
+TensorDB stores different study in one data warehouse. 
+This has pros and cons, the benefits is that suppose the each study we try a different model architecutre
+it is very easy for us to evaluate different model architecture.
+
+
+log and parameters 
+------------------
+
+The basic application is use TensorDB to save the model parameters and training/evaluation/testing logs.
+to use tensorDB, this can be easily done by replacing the print function by the db.log function
+
+for save the trainning log, we have
+``
+db.train_log
+``
+and 
+`` db. save_parameter ``
+
+methods
+
+suppose we save the log each step and save the parameters each epoch, we can have the code like this
+
+.. code-block:: python
+   for epoch in range(0,epoch_count):
+      [~,ac]=sess.run([train_op,loss],feed_dict({x:x,y:y_}
+      db.train_log({'accuracy':ac})
+   db.save_parameter(sess.run(network.all_parameters),{'acc':ac})
+   
+the code for save validation log and test log are similar.
+
+
+Model Architecture and Jobs
+---------------------------
+TensorDb also supporting the model architecture and jobs system
+in the current version, both the model architecture and job are just simply strings.
+it is up to the user to specifiy how to convert the string back to models or job.
+for example, in many our our cases, we just simpliy specify the python code.
+
+.. code-block:: python
+   code= '''
+   print "hello
+   ```
+   db.save_model_architecutre(code,{'name':'print'}
+   
+
+
+
+
+
+Data Importing
+--------------
+With a database, the development workflow is very flexible. 
+As long as the comtent in the database in the same, user can use whatever tools to write into the database
+
+For managing the trainning data,  TensorDB 
 
 Save and load data
 ---------------------
